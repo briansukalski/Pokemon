@@ -1,12 +1,14 @@
 //Pokedex to store Pokemon
 const dex = [];
-
+for(let i = 1; i < 152; i++) {
+    dex.push(undefined);
+}
 
 //Factory function to build Pokemon objects for Pokedex
-const pokedexFactory = (pkdexNum, name, type1, type2, baseHP, baseAttack, baseDefense, baseSpcAttack, baseSpcDefense, baseSpeed, evolvesInto, evolveLevel, evolvesFrom) => {
+const pokedexFactory = (name, pkdexNum, type1, type2, baseHP, baseAttack, baseDefense, baseSpcAttack, baseSpcDefense, baseSpeed, evolvesInto, evolveLevel, evolvesFrom) => {
     return {
-        pkdexNum,
         name,
+        pkdexNum,
         type1,
         type2, 
         baseHP,
@@ -21,15 +23,15 @@ const pokedexFactory = (pkdexNum, name, type1, type2, baseHP, baseAttack, baseDe
     }
 };
 
-const pidgey = pokedexFactory(16, "Pidgey", "Normal", "Flying", 40, 45, 40, 35, 35, 56, 17, 18, undefined);
-const pidgeotto = pokedexFactory(17, "Pidgeotto", "Normal", "Flying", 63, 60, 55, 50, 50, 71, 18, 36, 19);
-const pidgeot = pokedexFactory(18, "Pidgeot", "Normal", "Flying", 83, 80, 75, 70, 70, 91, undefined, undefined, undefined);
+const pidgey = pokedexFactory("Pidgey", 16, "Normal", "Flying", 40, 45, 40, 35, 35, 56, 17, 18, undefined);
+const pidgeotto = pokedexFactory("Pidgeotto", 17, "Normal", "Flying", 63, 60, 55, 50, 50, 71, 18, 36, 16);
+const pidgeot = pokedexFactory("Pidgeot", 18, "Normal", "Flying", 83, 80, 75, 70, 70, 91, undefined, undefined, 17);
 
-dex.push(pidgey);
-dex.push(pidgeotto);
-dex.push(pidgeot);
+dex[pidgey.pkdexNum] = pidgey;
+dex[pidgeotto.pkdexNum] = pidgeotto;
+dex[pidgeot.pkdexNum] = pidgeot;
 
-console.log(dex[2]);
+console.log(dex[18]);
 
 
 //Factory function to build Pokemon objects
