@@ -23,16 +23,20 @@ const pokedexFactory = (name, pkdexNum, type1, type2, baseHP, baseAttack, baseDe
     }
 };
 
-const pidgey = pokedexFactory("Pidgey", 16, "Normal", "Flying", 40, 45, 40, 35, 35, 56, 17, 18, undefined);
-const pidgeotto = pokedexFactory("Pidgeotto", 17, "Normal", "Flying", 63, 60, 55, 50, 50, 71, 18, 36, 16);
-const pidgeot = pokedexFactory("Pidgeot", 18, "Normal", "Flying", 83, 80, 75, 70, 70, 91, undefined, undefined, 17);
+const pokeGenerator = () => pokedexFactory.call(this);
 
-dex[pidgey.pkdexNum] = pidgey;
-dex[pidgeotto.pkdexNum] = pidgeotto;
-dex[pidgeot.pkdexNum] = pidgeot;
+const pidgeyDex = pokedexFactory("Pidgey", 16, "Normal", "Flying", 40, 45, 40, 35, 35, 56, 17, 18, undefined);
+const pidgeottoDex = pokedexFactory("Pidgeotto", 17, "Normal", "Flying", 63, 60, 55, 50, 50, 71, 18, 36, 16);
+const pidgeotDex = pokedexFactory("Pidgeot", 18, "Normal", "Flying", 83, 80, 75, 70, 70, 91, undefined, undefined, 17);
 
-console.log(dex[18]);
+dex[pidgeyDex.pkdexNum] = pidgeyDex;
+dex[pidgeottoDex.pkdexNum] = pidgeottoDex;
+dex[pidgeotDex.pkdexNum] = pidgeotDex;
 
+const pidgey = Object.assign({}, pidgeyDex);
+
+console.log(pidgeyDex);
+console.log(pidgey);
 
 //Factory function to build Pokemon objects
 /*
