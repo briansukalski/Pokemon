@@ -4,26 +4,39 @@ for(let i = 1; i < 152; i++) {
     dex.push(undefined);
 }
 
+const attackDict = [];
+
 //Factory function to build Pokemon objects for Pokedex
-const pokedexFactory = (name, pkdexNum, type1, type2, baseHP, baseAttack, baseDefense, baseSpcAttack, baseSpcDefense, baseSpeed, evolvesInto, evolveLevel, evolvesFrom) => {
+const pokedexFactory = (name, pkdexNum, type1, type2, baseHp, baseAttack, baseDefense, baseSpcAttack, baseSpcDefense, baseSpeed, evolvesInto, evolveLevel, evolvesFrom) => {
     return {
         name,
         pkdexNum,
         type1,
-        type2, 
-        baseHP,
-        baseAttack,
-        baseDefense,
-        baseSpcAttack,
-        baseSpcDefense,
-        baseSpeed,
+        type2,
+        baseStats: { 
+            baseHp,
+            baseAttack,
+            baseDefense,
+            baseSpcAttack,
+            baseSpcDefense,
+            baseSpeed,
+        },
         evolvesInto,
         evolveLevel,
         evolvesFrom
-    }
+    };
 };
 
-const pokeGenerator = () => pokedexFactory.call(this);
+//Factory function to create attacks for attack dictionary
+const attackFactory = (attackName, type, category, power, accuracy) => {
+    return {
+        attackName,
+        type,
+        category,
+        power,
+        accuracy
+    };
+}
 
 const pidgeyDex = pokedexFactory("Pidgey", 16, "Normal", "Flying", 40, 45, 40, 35, 35, 56, 17, 18, undefined);
 const pidgeottoDex = pokedexFactory("Pidgeotto", 17, "Normal", "Flying", 63, 60, 55, 50, 50, 71, 18, 36, 16);
@@ -33,64 +46,95 @@ dex[pidgeyDex.pkdexNum] = pidgeyDex;
 dex[pidgeottoDex.pkdexNum] = pidgeottoDex;
 dex[pidgeotDex.pkdexNum] = pidgeotDex;
 
-const pidgey = Object.assign({}, pidgeyDex);
-
-console.log(pidgeyDex);
-console.log(pidgey);
+// console.log(pidgeyDex);
+// console.log(pidgey);
 
 //Factory function to build Pokemon objects
-/*
-const pokemonFactory = (pkdexNum, name, type1, type2, sex, baseHP, baseAttack, baseDefense, baseSpcAttack, baseSpcDefense, baseSpeed, evolvesInto, evolveLevel, evolvesFrom) => {
-    return {
-        pkdexNum,
-        name,
-        type1,
-        type2, 
-        sex,
-        baseHP,
-        baseAttack,
-        baseDefense,
-        baseSpcAttack,
-        baseSpcDefense,
-        baseSpeed,
-        evolvesInto,
-        evolveLevel,
-        evolvesFrom,
-        level: 1,
+const pokemonFactory = (pkdexNum, sex, nickname = undefined, level = 1) => {
+    //Instantiates object from pokedex entry
+    const pokeInstance = Object.assign({}, dex[pkdexNum]);
+    pokeInstance.sex = sex;
+    pokeInstance.nickname = nickname;
+    pokeInstance.level = level;
+    pokeInstance.actualStats = {};
 
-        //Calculates actual stats
-        hp: 2 * this.baseHP * this.level / 100 + this.level + 10,
-        attack: 2 * this.baseAttack * this.level / 100 + 5,
-        defense: 2 * this.baseDefense * this.level / 100 + 5,
-        spcAttack: 2 * this.baseSpcAttack * this.level / 100 + 5,
-        spcDefense: 2 * this.baseSpcDefense * this.level / 100 + 5,
-        speed: 2 * this.baseSpeed * this.level / 100 + 5,
+    pokeInstance.updateStats = function() {
+        let hpProportion = this.currentHp / this.actualStats.maxHp;
+        this.actualStats.maxHp = Math.round(2 * this.baseStats.baseHp * this.level / 100 + this.level + 10);
+        this.currentHp = this.actualStats.maxHp * hpProportion;
+        this.actualStats.attack = Math.round(2 * this.baseStats.baseAttack * this.level / 100 + 5);
+        this.actualStats.defense = Math.round(2 * this.baseStats.baseDefense * this.level / 100 + 5);
+        this.actualStats.spcAttack = Math.round(2 * this.baseStats.baseSpcAttack * this.level / 100 + 5);
+        this.actualStats.spcDefense = Math.round(2 * this.baseStats.baseSpcDefense * this.level / 100 + 5);
+        this.actualStats.speed = Math.round(2 * this.baseStats.baseSpeed * this.level / 100 + 5);
+    };
 
-        updateStats: () => {
-            this.hp = 2 * this.baseHP * this.level / 100 + this.level + 10;
-            this.attack = 2 * this.baseAttack * this.level / 100 + 5;
-            this.defense = 2 * this.baseDefense * this.level / 100 + 5;
-            this.spcAttack = 2 * this.baseSpcAttack * this.level / 100 + 5;
-            this.spcDefense = 2 * this.baseSpcDefense * this.level / 100 + 5;
-            this.speed = 2 * this.baseSpeed * this.level / 100 + 5;
-        },
+    pokeInstance.evolve = function() {
+        Object.assign(this, dex[this.evolvesInto])
+    };
 
-        evolve: () => {
-
-        }
-        checkEvolution: () => {
-            if(this.evolvesInto) {
-                if(this.level >= this.evolveLevel) {
-                    this.evolve();
-                }
+    pokeInstance.checkEvolution = function() {
+        if(this.evolvesInto) {
+            if(this.level >= this.evolveLevel) {
+                this.evolve();
             }
-        },
-
-        levelUp: () => {
-            this.level++;
-            this.checkEvolution();
-            this.updateStats();
         }
     };
+
+    pokeInstance.levelUp = function() {
+        this.level++;
+        this.checkEvolution();
+        this.updateStats();
+    };
+
+    pokeInstance.updateStats();
+    pokeInstance.currentHp = pokeInstance.actualStats.maxHp;
+
+    return pokeInstance;
 };
+
+/*
+const pidgey = pokemonFactory(16, "M", "Ace");
+console.log(pidgey);
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+console.log(pidgey);
+pidgey.levelUp();
+console.log(pidgey);
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+pidgey.levelUp();
+console.log(pidgey);
+pidgey.levelUp();
+console.log(pidgey);
+pidgey.levelUp();
+console.log(pidgey);
 */
